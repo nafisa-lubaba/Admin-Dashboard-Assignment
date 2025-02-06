@@ -5,7 +5,7 @@ import { FaBox } from "react-icons/fa";
 
 const Sidebar = () => {
   return (
-    <div className="h-screen w-64 bg-gray-500 text-white p-5">
+    <div className="h-screen w-64 bg-teal-600 text-white p-5">
 
 
       <h2 className="text-xl font-bold mb-4 ">Admin Dashboard</h2>
