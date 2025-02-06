@@ -32,7 +32,7 @@ const Products = () => {
             showAlert('Please enter a product name', 'error');
             return;
         }
-        
+
         setIsLoading(true);
         const productData = {
             name: name,
@@ -59,48 +59,25 @@ const Products = () => {
     const handleDeleteProducts = async (id) => {
         try {
             setIsLoading(true);
-            // DELETE request (If DELETE is allowed)
             await axios.delete(`https://api.restful-api.dev/objects/${id}`);
 
             setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
             showAlert('Product deleted successfully!', 'success');
         } catch (error) {
             console.error("Delete error:", error.response || error);
-
-            if (error.response?.status === 405) {
-                try {
-                    const response = await axios({
-                        method: 'POST', // Try using POST instead of DELETE
-                        url: 'https://api.restful-api.dev/objects/delete',
-                        data: { id: id },
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (response.status === 200) {
-                        setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
-                        showAlert('Product deleted successfully!', 'success');
-                    }
-                } catch (retryError) {
-                    console.error("Retry delete error:", retryError);
-                    showAlert('Failed to delete product. Please try again.', 'error');
-                }
-            } else {
-                showAlert('Failed to delete product. Please try again.', 'error');
-            }
+            showAlert('Failed to delete product. Please try again.', 'error');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className='p-5'>
+        <div className='p-5 max-w-3xl mx-auto'>
             <SharedTitle heading="Products" />
 
             {alert.show && (
                 <div 
-                    className={`mb-4 p-4 rounded-md ${
+                    className={`mb-4 p-4 rounded-md text-center ${
                         alert.type === 'success' 
                             ? 'bg-green-100 text-green-700 border border-green-400' 
                             : 'bg-red-100 text-red-700 border border-red-400'
@@ -110,26 +87,28 @@ const Products = () => {
                 </div>
             )}
 
-            <div className="mb-6">
+            {/* Product Input Section */}
+            <div className="mb-6 flex flex-wrap items-center gap-3">
                 <input
                     type="text"
                     placeholder='Product Name'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className='border p-2 mr-3 rounded'
+                    className='border p-2 rounded flex-1 w-full md:w-auto'
                     disabled={isLoading}
                 />
                 <button
                     onClick={handleAddProducts}
-                    className={`px-3 py-2 rounded text-white ${
+                    className={`px-4 py-2 rounded text-white w-full md:w-auto ${
                         isLoading ? 'bg-teal-300 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600'
                     }`}
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Processing...' : 'Add Products'}
+                    {isLoading ? 'Processing...' : 'Add Product'}
                 </button>
             </div>
 
+            {/* Product List */}
             {products.length === 0 ? (
                 <p className="text-gray-500 text-center">No products available</p>
             ) : (
@@ -137,15 +116,14 @@ const Products = () => {
                     {products.map((product) => (
                         <li 
                             key={product.id} 
-                            className='bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-between shadow-sm'
+                            className='bg-white p-4 rounded-lg border border-gray-200 flex flex-col sm:flex-row items-center justify-between shadow-sm'
                         >
-                            <div className="flex flex-col">
+                            <div className="text-center sm:text-left">
                                 <span className="font-medium">{product.name}</span>
-                               
                             </div>
                             <button
                                 onClick={() => handleDeleteProducts(product.id)}
-                                className={`rounded px-3 py-2 text-white ${
+                                className={`rounded px-4 py-2 text-white mt-2 sm:mt-0 ${
                                     isLoading ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
                                 }`}
                                 disabled={isLoading}
@@ -161,3 +139,4 @@ const Products = () => {
 };
 
 export default Products;
+
